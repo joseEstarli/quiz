@@ -1,4 +1,11 @@
 <div align="center">
+<form method="get" action="/quizes">        
+  Palabra/s en la pregunta: 
+  <input type="text" name="search" value="<%= search %>"/>
+  <input type="submit" value="Enviar">
+</form>
+<br/>
+<b>Preguntas encontradas: <%= quizes.length %></b>
 <table>
   <%
   var i;
