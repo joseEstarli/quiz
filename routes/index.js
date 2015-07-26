@@ -21,7 +21,7 @@ router.put('/quizes/:quizId(\\d+)',        quizController.update);
 router.delete('/quizes/:quizId(\\d+)',     quizController.destroy); 
 
 router.get('/author', function(req, res) {
-  res.render('author', { autor: 'Jos\u00E9 Estarl\u00ED' });
+  res.render('author', { autor: 'Jos\u00E9 Estarl\u00ED', errors: [] });
 });
 
 
