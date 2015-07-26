@@ -20,8 +20,8 @@ exports.index = function(req, res) {
   if (search){
     palabra = '%'+ search.replace (" ", "%") +'%';
   }else{
-    palabra = "NNNNNNNNNNNNN";
-    search = "palabra";
+    palabra = "%";
+    search = "";
   }
   models.Quiz.findAll({where:["pregunta LIKE ?", palabra], order:"pregunta"}).then(function(quizes) {
     res.render('quizes/index', { quizes: quizes, search: search, errors: []});
@@ -74,7 +74,7 @@ exports.create = function(req, res) {
         .then( function(){ res.redirect('/quizes')}) 
       }      // res.redirect: Redirección HTTP a lista de preguntas
     }
-  );
+  ).catch(function(error){next(error)});
 };
 
 
@@ -99,5 +99,12 @@ exports.update = function(req, res) {
         .then( function(){ res.redirect('/quizes');});
       }     // Redirección HTTP a lista de preguntas (URL relativo)
     }
-  );
+  ).catch(function(error){next(error)});
+};
+
+// DELETE /quizes/:id
+exports.destroy = function(req, res) {
+  req.quiz.destroy().then( function() {
+    res.redirect('/quizes');
+  }).catch(function(error){next(error)});
 };
