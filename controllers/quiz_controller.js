@@ -24,14 +24,14 @@ exports.index = function(req, res) {
     search = "palabra";
   }
   models.Quiz.findAll({where:["pregunta LIKE ?", palabra], order:"pregunta"}).then(function(quizes) {
-    res.render('quizes/index', { quizes: quizes, search: search});
+    res.render('quizes/index', { quizes: quizes, search: search, errors: []});
    }).catch(function(error) { next(error);});
  };
 
 // GET /quizes/:id
 exports.show = function(req, res) {
-  models.Quiz.find(req.params.quizId).then(function(quiz) {
-    res.render('quizes/show', { quiz: quiz});
+    models.Quiz.find(req.params.quizId).then( function(quiz) {
+    res.render('quizes/show', { quiz: req.quiz, errors: []});
   })
 };
 
@@ -39,12 +39,14 @@ exports.show = function(req, res) {
 exports.answer = function (req, res){
   models.Quiz.find(req.params.quizId).then(function(quiz) {
     if (req.query.respuesta === quiz.respuesta) {
-      res.render('quizes/answer', 
-                 { quiz: quiz, respuesta: 'Correcto' });
-    } else {
-      res.render('quizes/answer', 
-                 { quiz: quiz, respuesta: 'Incorrecto'});
-    }
+       resultado = 'Correcto';
+     }
+    res.render('quizes/answer', 
+      { quiz: req.quiz, 
+        respuesta: resultado, 
+        errors: []
+      }
+    );
   })
 };
 
@@ -54,7 +56,7 @@ exports.new = function(req, res) {
     {pregunta: "Pregunta", respuesta: "Respuesta"}
   );
 
-  res.render('quizes/new', {quiz: quiz});
+  res.render('quizes/new', {quiz: quiz, errors: []});
 };
 
 // POST /quizes/create
@@ -62,7 +64,19 @@ exports.create = function(req, res) {
   var quiz = models.Quiz.build( req.body.quiz );
 
 // guarda en DB los campos pregunta y respuesta de quiz
-  quiz.save({fields: ["pregunta", "respuesta"]}).then(function(){
-    res.redirect('/quizes');  
-  })   // res.redirect: Redirección HTTP a lista de preguntas
+  quiz
+  .validate()
+  .then(
+    function(err){
+      if (err) {
+        res.render('quizes/new', {quiz: quiz, errors: err.errors});
+      } else {
+        quiz // save: guarda en DB campos pregunta y respuesta de quiz
+        .save({fields: ["pregunta", "respuesta"]})
+        .then( function(){ res.redirect('/quizes')}) 
+      }      // res.redirect: Redirección HTTP a lista de preguntas
+    }
+  );
 };
+
+
