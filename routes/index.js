@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 var quizController = require ('../controllers/quiz_controller.js');
-var commentController = require('../controllers/comment_controller');
+var commentController = require('../controllers/comment_controller.js');
+var sessionController = require('../controllers/session_controller.js');
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -11,6 +12,11 @@ router.get('/', function(req, res) {
 
 // Autoload de comandos con :quizId
 router.param('quizId', quizController.load);  // autoload :quizId
+
+// Definición de rutas de sesion
+router.get('/login',  sessionController.new);     // formulario login
+router.post('/login', sessionController.create);  // crear sesión
+router.get('/logout', sessionController.destroy); // destruir sesión
 
 // Definición de rutas de /quizes
 router.get('/quizes',                     quizController.index);
@@ -26,7 +32,7 @@ router.get('/author', function(req, res) {
   res.render('author', { autor: 'Jos\u00E9 Estarl\u00ED', errors: [] });
 });
 
-
+// Definición de rutas de commentarios
 router.get('/quizes/:quizId(\\d+)/comments/new',            commentController.new);
 router.post('/quizes/:quizId(\\d+)/comments',              commentController.create);
 
