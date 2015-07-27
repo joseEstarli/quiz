@@ -35,10 +35,13 @@ app.use(function(req, res, next) {
       var diferencia = ahora - req.session.user.ultimo_acceso;
       if (diferencia > 120000){
         console.log ("mas de 2 minutos:"+ diferencia);
-        res.redirect('/logout');
+        delete req.session.user;
+      }else{
+        req.session.user.ultimo_acceso = ahora;
       };
+    }else{
+      req.session.user.ultimo_acceso = ahora;
     };
-    req.session.user.ultimo_acceso = ahora;
   };
   next();
 });
