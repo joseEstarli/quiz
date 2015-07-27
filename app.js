@@ -25,6 +25,24 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser('Quiz 2015'));
 app.use(session());
 
+// auto-logout
+app.use(function(req, res, next) {
+  if (req.session.user){
+    var ahora = Date.now();
+
+    if (req.session.user.ultimo_acceso){
+      // Si la variable comprovamos cuanto ha tardado en hacer una peticion
+      var diferencia = ahora - req.session.user.ultimo_acceso;
+      if (diferencia > 120000){
+        console.log ("mas de 2 minutos:"+ diferencia);
+        res.redirect('/logout');
+      };
+    };
+    req.session.user.ultimo_acceso = ahora;
+  };
+  next();
+});
+
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
